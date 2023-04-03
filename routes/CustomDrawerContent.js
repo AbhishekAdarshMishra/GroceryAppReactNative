@@ -24,18 +24,20 @@ export default function CustomDrawerContent(props) {
     <SafeAreaView
       style={{
         flex: 1,
-        paddingTop: "10%",
-        backgroundColor: "#88c96d",
+        backgroundColor: "#02732d",
       }}
     >
       {/*Top Large Image */}
-      <Image
-        source={{ uri: BASE_PATH + proileImage }}
-        style={styles.sideMenuProfileIcon}
-      />
+      <View style={styles.topView}>
+        <Image
+          // source={{ uri: BASE_PATH + proileImage }}
+          source={require("../assets/user2.png")}
+          style={styles.sideMenuProfileIcon}
+        />
+      </View>
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
-        <DrawerItem
+        {/* <DrawerItem
           label="Visit Us"
           onPress={() => Linking.openURL("https://aboutreact.com/")}
         />
@@ -45,7 +47,7 @@ export default function CustomDrawerContent(props) {
           }}
         >
           <View style={styles.customItem}>
-            <Text>Rate Us</Text>
+            <Text style={styles.textStyle}>Rate Us</Text>
             <Image
               source={{ uri: BASE_PATH + "star_filled.png" }}
               style={styles.iconStyle}
@@ -61,19 +63,19 @@ export default function CustomDrawerContent(props) {
           }
         >
           <View style={styles.customItem}>
-            <Text>Rate Us</Text>
+            <Text style={styles.textStyle}>Rate Us</Text>
             <Image
               source={{ uri: BASE_PATH + "star_filled.png" }}
               style={styles.iconStyle}
             />
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </DrawerContentScrollView>
       <Text
         style={{
           fontSize: 16,
           textAlign: "center",
-          color: "grey",
+          color: "#28a146",
         }}
       >
         Abhishek Adarsh Mishra
@@ -89,6 +91,11 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 100 / 2,
     alignSelf: "center",
+    marginTop: "10%",
+  },
+  topView: {
+    // backgroundColor: "white",
+    paddingVertical: "10%",
   },
   iconStyle: {
     width: 15,
@@ -96,9 +103,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   customItem: {
-    padding: 16,
+    padding: 18,
     flexDirection: "row",
     alignItems: "center",
     color: "white",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
   },
 });

@@ -1,16 +1,61 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, ScrollView, Modal } from "react-native";
+import React, { useState, useContext } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
 import CartCard from "../shared/CartCard";
+import { CartItem } from "../App";
 
-export default function Cart() {
+export default function Cart({ navigation }) {
+  const cartItemValue = useContext(CartItem);
+  const [translucentDisplay, setTranslucentDisplay] = useState("none");
+  const [modalVisibility, setModalVisibility] = useState(false);
+  const openModal = (open) => {
+    if (open) {
+      setTranslucentDisplay("flex");
+      setModalVisibility(true);
+      cartItemValue.cartDataDispatch({
+        type: "reset",
+      });
+    } else {
+      setTranslucentDisplay("none");
+      setModalVisibility(false);
+    }
+  };
+  const continueShopping = () => {
+    navigation.goBack();
+    openModal(false);
+  };
+  var styleOverlay = {
+    flex: 1,
+    position: "absolute",
+    left: 0,
+    top: 0,
+    opacity: 0.5,
+    backgroundColor: "black",
+    width: "100%",
+    height: "100%",
+    elevation: 5,
+    display: translucentDisplay,
+  };
   return (
     <View style={styles.container}>
-      <Modal animationType="slide" transparent={true} visible={true}>
+      <Modal animationType="slide" transparent={true} visible={modalVisibility}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <View style={styles.close}>
-              <Text style={styles.closeText}>X</Text>
-            </View>
+            <TouchableOpacity
+              style={styles.close}
+              onPress={() => openModal(false)}
+            >
+              <View>
+                <Text style={styles.closeText}>X</Text>
+              </View>
+            </TouchableOpacity>
             <Image
               source={require("../assets/tick.png")}
               style={styles.tickImg}
@@ -21,25 +66,31 @@ export default function Cart() {
             <Text style={styles.modalText}>
               You can track the delivery in the 'Order History' Section
             </Text>
-            <View style={styles.button1}>
+            <TouchableOpacity
+              style={styles.button1}
+              onPress={() => continueShopping()}
+            >
               <Text style={styles.button1Text}>Continue Shopping</Text>
-            </View>
-            <View style={styles.button2}>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button2}>
               <Text style={styles.button2Text}>Go to Order History</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
       <View style={styles.header}>
-        <View style={styles.backView}>
+        <TouchableOpacity style={styles.backView} onPress={navigation.goBack}>
           <Image
             source={require("../assets/back.png")}
             style={styles.backImg}
           />
-        </View>
+        </TouchableOpacity>
         <Text style={styles.titleHeading}>Cart</Text>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ marginBottom: "25%" }}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.addressView}>
           <View style={styles.mapAddreddView}>
             <Text style={styles.heading}>Shipping Address</Text>
@@ -54,6 +105,7 @@ export default function Cart() {
                 <Text style={styles.addressDetails}>
                   {" "}
                   Abhishek Adarsh Mishra
+                  {/* {cartItemValue.cartDataState[0].name} */}
                 </Text>
                 <Text style={styles.addressDetails}> 987654***0</Text>
                 <Text></Text>
@@ -69,31 +121,36 @@ export default function Cart() {
             </View>
           </View>
         </View>
-
         <View style={styles.orders}>
           <Text style={styles.heading}>Order Summary</Text>
-          <CartCard />
-          <CartCard />
-          <CartCard />
-          <CartCard />
-          <CartCard />
-          <CartCard />
-          <CartCard />
-          <CartCard />
+          {cartItemValue?.cartDataState?.map((item) => (
+            <CartCard data={item} />
+          ))}
         </View>
       </ScrollView>
       <View style={styles.bottomView}>
         <View style={styles.priceTotalView}>
           <Text style={styles.priceTotalText}>Total</Text>
-          <Text style={styles.priceTotal}>Rs 13.4</Text>
+          <Text style={styles.priceTotal}>
+            {cartItemValue.cartDataState.reduce(
+              (accumulator, currentValue) =>
+                accumulator + currentValue.weight * currentValue.price,
+              0
+            )}
+          </Text>
         </View>
-        <View style={styles.buttonView}>
-          <View style={styles.cartButton}>
-            <Text style={styles.cartButtonText}>Place Order</Text>
+        <TouchableOpacity
+          style={styles.buttonView}
+          onPress={() => openModal(true)}
+        >
+          <View>
+            <View style={styles.cartButton}>
+              <Text style={styles.cartButtonText}>Place Order</Text>
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
-      <View style={styles.translucent}></View>
+      <View style={styleOverlay}></View>
     </View>
   );
 }
@@ -183,6 +240,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    height: "10%",
   },
   priceTotalView: {
     justifyContent: "center",
@@ -217,18 +275,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 22,
-  },
-  translucent: {
-    flex: 1,
-    position: "absolute",
-    left: 0,
-    top: 0,
-    opacity: 0.5,
-    backgroundColor: "black",
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    elevation: 5,
   },
   modalView: {
     backgroundColor: "white",

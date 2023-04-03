@@ -1,22 +1,55 @@
-import React from "react";
-import { StyleSheet, Text, View, ImageBackground, Image } from "react-native";
+import React, { useState, useContext } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ImageBackground,
+  Image,
+  TouchableOpacity,
+} from "react-native";
+import { CartItem } from "../App";
 
-export default function CartCard() {
+export default function CartCard(props) {
+  const cartItemContext = useContext(CartItem);
   return (
     <View style={styles.container}>
-      <Image source={require("../assets/fruit1.jpg")} style={styles.img} />
+      <View style={styles.imageView}>
+        <Image source={require("../assets/fruit1.jpg")} style={styles.img} />
+      </View>
       <View style={styles.details}>
-        <Text style={styles.detailContent}>Fruits</Text>
-        <Text style={styles.detailContent}>Rs 60.50 /Kg</Text>
+        <Text numberOfLines={1} style={styles.detailContent}>
+          {props.data?.name}
+        </Text>
+        <Text style={styles.detailContent}>{props.data?.price}</Text>
       </View>
       <View style={styles.incView}>
-        <View style={styles.incButton}>
-          <Text style={styles.incButtonText}>-</Text>
-        </View>
-        <Text style={styles.weight}>2 Kg</Text>
-        <View style={styles.incButton}>
-          <Text style={styles.incButtonText}>+</Text>
-        </View>
+        <TouchableOpacity
+          onPress={() =>
+            cartItemContext.cartDataDispatch({
+              type: "deacreaseWeight",
+              value: props.data.id,
+            })
+          }
+          style={styles.incButton}
+        >
+          <View>
+            <Text style={styles.incButtonText}>-</Text>
+          </View>
+        </TouchableOpacity>
+        <Text style={styles.weight}>{props.data?.weight}Kg</Text>
+        <TouchableOpacity
+          onPress={() =>
+            cartItemContext.cartDataDispatch({
+              type: "increaseWeight",
+              value: props.data.id,
+            })
+          }
+          style={styles.incButton}
+        >
+          <View>
+            <Text style={styles.incButtonText}>+</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -31,7 +64,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
   },
-
+  imageView: {
+    width: "25%",
+  },
   img: {
     height: 60,
     width: 60,
@@ -57,9 +92,11 @@ const styles = StyleSheet.create({
   },
   details: {
     justifyContent: "center",
+    width: "45%",
   },
   detailContent: {
     fontWeight: "bold",
     color: "#444",
+    width: "80%",
   },
 });

@@ -7,14 +7,20 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import CategoriesCard from "../shared/CategoriesCard";
 import PopularCard from "../shared/PopularCard";
 import CarouselCard from "../shared/CarouselCard";
+import { data } from "../data/growcerryData";
+import { LogBox } from "react-native";
 
+LogBox.ignoreLogs([
+  "VirtualizedLists should never be nested inside plain ScrollViews with the same orientation - use another VirtualizedList-backed container instead.",
+]);
 export default function Home({ navigation }) {
   return (
-    <View>
+    <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
           <View style={styles.hamburgerView}>
@@ -25,14 +31,17 @@ export default function Home({ navigation }) {
           </View>
         </TouchableOpacity>
         <Text style={styles.logo}>Growcerry</Text>
-        <View style={styles.notificationView}>
+        <TouchableOpacity
+          style={styles.notificationView}
+          onPress={() => navigation.navigate("cartScreen")}
+        >
           <Image
             style={styles.notification}
             source={require("../assets/cart.png")}
           ></Image>
-        </View>
+        </TouchableOpacity>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         <View>
           <View style={styles.searchBox}>
             <View style={styles.inputView}>
@@ -47,7 +56,11 @@ export default function Home({ navigation }) {
           </View>
         </View>
         <View style={styles.section}>
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+          <ScrollView
+            style={styles.sectionScroll}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          >
             <View style={styles.categoriesView}>
               <CarouselCard />
               <CarouselCard />
@@ -60,7 +73,11 @@ export default function Home({ navigation }) {
         </View>
         <View style={styles.section}>
           <Text style={styles.title}>Categories</Text>
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+          <ScrollView
+            style={styles.sectionScroll}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          >
             <View style={styles.categoriesView}>
               <CategoriesCard />
               <CategoriesCard />
@@ -76,16 +93,15 @@ export default function Home({ navigation }) {
         <View style={styles.popular}>
           <Text style={[styles.title, { marginLeft: "0%" }]}>Popular</Text>
           <View style={styles.popularView}>
-            <PopularCard />
-            <PopularCard />
-            <PopularCard />
-            <PopularCard />
-            <PopularCard />
-            <PopularCard />
-            <PopularCard />
-            <PopularCard />
-            <PopularCard />
-            <PopularCard />
+            <FlatList
+              keyExtractor={(item) => item.id}
+              data={data}
+              renderItem={({ item }) => (
+                <PopularCard data={item} navigation={navigation} />
+              )}
+              scrollEnabled={false}
+              numColumns={2}
+            />
           </View>
         </View>
       </ScrollView>
@@ -149,6 +165,11 @@ const styles = StyleSheet.create({
   },
   categoriesView: {
     flexDirection: "row",
+    flex: 1,
+    marginRight: 50,
+  },
+  sectionScroll: {
+    flex: 1,
   },
   title: {
     fontSize: 18,
@@ -158,12 +179,17 @@ const styles = StyleSheet.create({
   },
   section: {
     marginLeft: "4%",
+    flex: 1,
   },
   popular: {
+    flex: 1,
     marginHorizontal: "8%",
   },
   popularView: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flex: 1,
+    marginBottom: 10,
+  },
+  container: {
+    flex: 1,
   },
 });

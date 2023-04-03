@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useContext } from "react";
+
 import {
   StyleSheet,
   Text,
@@ -6,19 +7,22 @@ import {
   ImageBackground,
   Image,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
+import { CartItem } from "../App";
 
-export default function Description() {
+export default function Description({ navigation, route }) {
+  const cartItemContext = useContext(CartItem);
   return (
     <View style={styles.container}>
       <View style={styles.imageView}>
         <View style={styles.header}>
-          <View style={styles.backView}>
+          <TouchableOpacity style={styles.backView} onPress={navigation.goBack}>
             <Image
               source={require("../assets/back.png")}
               style={styles.backImg}
             />
-          </View>
+          </TouchableOpacity>
         </View>
         <Image
           source={require("../assets/category.png")}
@@ -26,20 +30,36 @@ export default function Description() {
         />
       </View>
       <View style={styles.priceView}>
-        <Text style={styles.price}>$6.70/kg</Text>
+        <Text style={styles.price}>{route.params.data.price}/Kg</Text>
       </View>
 
       <ScrollView style={styles.desc}>
         <View style={styles.head}>
-          <Text style={styles.title}>Fresh Natural</Text>
+          <Text style={styles.title}>{route.params.data.name}</Text>
           <View style={styles.incView}>
-            <View style={styles.incButton}>
+            <TouchableOpacity
+              onPress={() =>
+                cartItemContext.cartDataDispatch({
+                  type: "deacreaseWeight",
+                  value: route.params.data.id,
+                })
+              }
+              style={styles.incButton}
+            >
               <Text style={styles.incButtonText}>-</Text>
-            </View>
-            <Text style={styles.weight}>2 Kg</Text>
-            <View style={styles.incButton}>
+            </TouchableOpacity>
+            <Text style={styles.weight}>{route.params.data.weight}</Text>
+            <TouchableOpacity
+              onPress={() =>
+                cartItemContext.cartDataDispatch({
+                  type: "increaseWeight",
+                  value: route.params.data.id,
+                })
+              }
+              style={styles.incButton}
+            >
               <Text style={styles.incButtonText}>+</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.ratingView}>
@@ -86,11 +106,18 @@ export default function Description() {
       <View style={styles.bottomView}>
         <View style={styles.priceTotalView}>
           <Text style={styles.priceTotalText}>Total</Text>
-          <Text style={styles.priceTotal}>Rs 13.4</Text>
+          <Text style={styles.priceTotal}>
+            Rs{" "}
+            {cartItemContext.cartDataState.reduce(
+              (accumulator, currentValue) =>
+                accumulator + currentValue.weight * currentValue.price,
+              0
+            )}
+          </Text>
         </View>
         <View style={styles.buttonView}>
           <View style={styles.cartButton}>
-            <Text style={styles.cartButtonText}>Add To Cart</Text>
+            <Text style={styles.cartButtonText}>Go To Cart</Text>
           </View>
         </View>
       </View>

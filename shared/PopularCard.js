@@ -1,24 +1,47 @@
-import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import React, { useContext } from "react";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { CartItem } from "../App";
 
-export default function PopularCard() {
+export default function PopularCard({ data, navigation }) {
+  const cartItemContext = useContext(CartItem);
   return (
     <View style={[styles.container, styles.shadowProp]}>
       <View style={[styles.fullCard]}>
-        <View style={styles.card}>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() =>
+            navigation.navigate("descriptionScreen", {
+              data: data,
+            })
+          }
+        >
           <Image
             style={styles.image}
             source={require("../assets/fruit1.jpg")}
           ></Image>
-        </View>
+        </TouchableOpacity>
         <View style={styles.cardDetails}>
           <View style={styles.details}>
-            <Text style={styles.detailTitle}>Apple</Text>
-            <Text style={styles.detailPrice}>$6.70/Kg</Text>
+            <Text
+              numberOfLines={2}
+              ellipsizeMode="tail"
+              style={styles.detailTitle}
+            >
+              {data.name}
+            </Text>
+            <Text style={styles.detailPrice}>{data.price}</Text>
           </View>
-          <View style={styles.add}>
+          <TouchableOpacity
+            onPress={() =>
+              cartItemContext.cartDataDispatch({
+                type: "addItem",
+                value: data,
+              })
+            }
+            style={styles.add}
+          >
             <Text style={styles.addText}>+</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -50,12 +73,12 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     backgroundColor: "#fff",
-    height: 140,
+    height: 160,
     width: "100%",
     borderRadius: 10,
   },
   cardDetails: {
-    height: 50,
+    height: 60,
     width: "90%",
     marginHorizontal: "5%",
     marginBottom: "8%",
@@ -63,6 +86,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
+    paddingRight: "15%",
   },
   details: {
     marginLeft: "6%",
@@ -77,8 +101,8 @@ const styles = StyleSheet.create({
   },
   add: {
     backgroundColor: "#5acc7c",
-    height: "50%",
-    width: "16%",
+    height: "70%",
+    width: "20%",
     borderBottomLeftRadius: 7,
     borderTopLeftRadius: 7,
     alignItems: "center",
